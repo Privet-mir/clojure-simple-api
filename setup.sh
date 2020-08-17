@@ -64,13 +64,17 @@ pip install robotframework
 pip install robotframework-httplibrary
 
 ## copy robot binary to bin
-BIN_PATH=$(which robot)
-sudo cp $BIN_PATH /usr/local/bin/
+sudo cp  ~/.local/bin/robot  /usr/local/bin/
 
 echo -e "${GREEN}Download Sonar scanner cli${NC}"
 wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip
 unzip sonar-scanner-cli-4.4.0.2170-linux.zip
 
+echo -e "${GREEN}Install lein${NC}"
+cd ~ && wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+chmod +x ~/lein
+sudo cp ~/lein /usr/local/bin/lein
+sudo lein upgrade 2.8.3
 
 echo -e "${GREEN}Restart Jenkins Server${NC}"
 sudo service jenkins restart
