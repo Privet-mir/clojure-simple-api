@@ -31,7 +31,8 @@ pipeline {
         stage('DeployStaging') {
             steps {
                 /* If deployment fails it will pause and rollback to
-                previous image*/
+                previous image, next replica is updated after 10s and
+                when previous replica status is running.*/
                 sh '''
                 echo "Deploy docker swym service with 3 replicas"
                     
@@ -76,7 +77,7 @@ pipeline {
         
         stage('CodeQuality') {
             steps {
-                /*Running Sonar reports will be published on sonar dashboard
+                /*Running Sonar, reports will be published on sonar dashboard
                 this will perform lint, code coverage, vulnerability analysis
                 on code*/
                 /*Pass soarqube env name that you have configured in
@@ -89,6 +90,9 @@ pipeline {
         
         stage('BuildProd') {
             steps {
+                /*this will merge develop branch with platform branch
+                and tag staging image as prod only when all previous 
+                stages are successfull*/
                 sh '''
                 echo "Checkout ${PLATFORM_BRANCH}"
                 git checkout ${PLATFORM_BRANCH}
@@ -108,6 +112,14 @@ pipeline {
         
         stage('DeployProd') {
             steps {
+                 /* If deployment fails it will pause and rollback to
+                previous image, next replica is updated after 10s and
+                when previous replica status is running.*/
+                
+                /*the script does not delete running services, it will 
+                check if service exists, if yes then update service with 
+                new image, if no the deploy service
+                Bringing no/zero downtime to production */
                 sh '''
                     echo "Deploy docker prod swym service with 3 replicas"
 
