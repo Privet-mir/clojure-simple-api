@@ -11,8 +11,8 @@ if ! command -v java;
 then
         echo -e "${RED}java is not installed, installing openjdk-java${NC}"
         sudo apt update -y
-        sudo apt install default-jre -y
-        sudo apt install default-jdk -y
+        sudo apt install openjdk-8-jre -y
+        sudo apt install openjdk-8-jdk -y
         sudo apt install unzip
 
 else

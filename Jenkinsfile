@@ -19,7 +19,10 @@ pipeline {
         stage('Buld') {
             steps {
                 /* Build docker image from Dockerfile for staging*/
-                sh "docker build --no-cache -t swym_staging:${BUILD_ID} ."
+                sh '''
+                lein deps
+                docker build --no-cache -t swym_staging:${BUILD_ID} .
+                '''
             }
         }
         stage('Test') {
@@ -82,8 +85,11 @@ pipeline {
                 on code*/
                 /*Pass soarqube env name that you have configured in
                 global configuration setting*/
+                
                 withSonarQubeEnv('sonar') {
-                sh 'sonar-scanner'
+                sh '''
+                export PATH=$PATH:/home/ubuntu/sonar-scanner-4.4.0.2170-linux/bin
+                sonar-scanner'''
               }
             }
         }
@@ -93,6 +99,12 @@ pipeline {
                 /*this will merge develop branch with platform branch
                 and tag staging image as prod only when all previous 
                 stages are successfull*/
+                /*
+                echo "Push to ${PLATFORM_BRANCH}"
+                git push origin ${PLATFORM_BRANCH} 
+
+                */
+                withCredentials([usernamePassword(credentialsId: 'github', usernameVariable: 'username', passwordVariable: 'password')]){
                 sh '''
                 echo "Checkout ${PLATFORM_BRANCH}"
                 git checkout ${PLATFORM_BRANCH}
@@ -101,12 +113,16 @@ pipeline {
                 git merge origin/${BRANCH_NAME}
                 
                 echo "Push to ${PLATFORM_BRANCH}"
-                git push origin ${PLATFORM_BRANCH} 
-
+                git push origin ${PLATFORM_BRANCH} http://$username:$password@github.com/Privet-mir/clojure-simple-api.git
+                
                 echo "Tag staging image for prod"
                 docker tag swym_staging:${BUILD_ID} swym_prod:${BUILD_ID}
 
                 '''
+                
+                    
+                }
+
             }
         }
         
