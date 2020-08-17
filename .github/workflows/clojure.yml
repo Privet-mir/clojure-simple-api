@@ -27,7 +27,7 @@ jobs:
       - name: Trigger Jenkins Job
         uses: wei/curl@v1
         with:
-            args: -X POST --data  PLATFORM_BRANCH=swym BRANCH_NAME=develop http://git:git0000@18.235.2.186:8080/job/Swym_Pipeline/buildWithParameters?token=swym
+            args: -X POST --data  PLATFORM_BRANCH=swym BRANCH_NAME=develop http://admin:admin@52.86.76.69:8080/job/Swym_Pipeline/buildWithParameters?token=swym
 
 
         
