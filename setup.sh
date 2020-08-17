@@ -13,6 +13,7 @@ then
         sudo apt update -y
         sudo apt install default-jre -y
         sudo apt install default-jdk -y
+        sudo apt install unzip
 
 else
         echo -e " ${GREEN}java version${NC}"
@@ -57,16 +58,29 @@ else
         docker --version
 fi
 
-echo "Install python2.7 for Robot Framework"
+echo -e "${GREEN}Install python2.7 for Robot Framework${NC}"
 sudo apt install python2.7 python-pip -y
 pip install robotframework
+pip install robotframework-httplibrary
+
+## copy robot binary to bin
+BIN_PATH=$(which robot)
+sudo cp $BIN_PATH /usr/local/bin/
+
+echo -e "${GREEN}Download Sonar scanner cli${NC}"
+wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip
+unzip sonar-scanner-cli-4.4.0.2170-linux.zip
+
+
+echo -e "${GREEN}Restart Jenkins Server${NC}"
+sudo service jenkins restart
 
 echo -e " ${GREEN}Run sonarqube server${NC}"
 sudo docker run -d --name sonarqube -p 9000:9000 sonarqube
 sleep 10
 sudo docker exec -it sonarqube bash -c 'cd /opt/sonarqube/extensions/plugins/ && wget https://github.com/fsantiag/sonar-clojure/releases/download/v2.0.0/sonar-clojure-plugin-2.0.0.jar && chmod +x sonar-clojure-plugin-2.0.0.jar'
 
-echo "${GREEN}Login into sonarqube using user & pass admin:admin${NC}"
+echo -e "${GREEN}Login into sonarqube using user & pass admin:admin${NC}\n"
 echo -e "${GREEN} Install following plugins from Jenkins dashboard${NC}\n"
 echo -e "${GREEN}Robot Framework plugin${NC}\n"
 echo -e "${GREEN}Sonarqube Scanner for Jenkins${NC}\n"
