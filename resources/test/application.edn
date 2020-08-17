@@ -1,0 +1,12 @@
+{:hostname "localhost"
+ :h2database {:dbtype "h2"
+             :dbname "./resources/test/db/clojure_rest_h2"
+             :user "sa"
+             :password ""}
+
+ :h2databasekorma {:db "./resources/test/db/clojure_rest_h2"
+                   :user "sa"
+                   :password ""}
+ 
+ :ragtime-h2-url "jdbc:h2:file:./resources/test/db/clojure_rest_h2;USER=sa;PASSWORD="
+ }

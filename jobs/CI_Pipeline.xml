@@ -1,0 +1,129 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.39">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.7.1"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.7.1">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.31.0">
+      <projectUrl>https://github.com/Privet-mir/clojure-simple-api/</projectUrl>
+      <displayName></displayName>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
+    <hudson.model.ParametersDefinitionProperty>
+      <parameterDefinitions>
+        <hudson.model.StringParameterDefinition>
+          <name>PLATFORM_BRANCH</name>
+          <description></description>
+          <defaultValue>swym</defaultValue>
+          <trim>false</trim>
+        </hudson.model.StringParameterDefinition>
+      </parameterDefinitions>
+    </hudson.model.ParametersDefinitionProperty>
+    <org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+      <triggers>
+        <com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.31.0">
+          <spec></spec>
+        </com.cloudbees.jenkins.GitHubPushTrigger>
+      </triggers>
+    </org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+  </properties>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.82">
+    <script>pipeline {
+    agent any
+    	environment {
+    	    PLATFORM_BRANCH = &quot;${PLATFORM_BRANCH}&quot;
+			BUILD_ID = &quot;${BUILD_NUMBER}&quot;
+			REGION = &quot;${REGION}&quot;
+			CLUSTER = &quot;${CLUSTER}&quot;
+	}
+    stages {
+        stage(&apos;Checkout&apos;) {
+            steps {
+                parallel(
+				&quot;checkout Platform&quot;: {
+				build job: &apos;CI/CI_Checkout&apos;, parameters: [string(name: &apos;BRANCH_NAME&apos;, value: PLATFORM_BRANCH)]
+				}
+                )
+            }
+        }
+		stage(&apos;Build&apos;) {
+            steps {
+                parallel(
+                    &quot;Build&quot;: {
+						build job: &apos;CI/CI_docker_build&apos;, parameters: [string(name: &apos;BUILD_ID&apos;, value: BUILD_ID)]
+					}
+                )
+            }
+        }
+		stage(&apos;Test&apos;) {
+            steps {
+                parallel(
+                    &quot;API&quot;: {
+						build job: &apos;CI/CI_API_Test&apos;, parameters: [string(name: &apos;BUILD_ID&apos;, value: BUILD_ID)]
+					}
+                )
+            }
+        }
+		stage(&apos;DeployStaging&apos;) {
+            steps {
+                parallel(
+                    &quot;DeployStaging&quot;: {
+						build job: &apos;CI/CI_DeployStaging&apos;, parameters: [string(name: &apos;BUILD_ID&apos;, value: BUILD_ID)]
+					}
+                )
+            }
+        }
+		stage(&apos;QATest&apos;) {
+            steps {
+                parallel(
+                    &quot;QATest&quot;: {
+						build job: &apos;CI/QATest&apos;
+					}
+                )
+            }
+        }
+		stage(&apos;CodeQuality&apos;) {
+            steps {
+                parallel(
+                    &quot;SonarQube&quot;: {
+                        build job: &apos;CI/SonarCodeQuality&apos;
+                }
+                )
+            }
+        }
+		stage(&apos;BuildProd&apos;) {
+            steps {
+                parallel(
+                    &quot;BuildProd&quot;: {
+                        build job: &apos;CI/BuildProd&apos;, parameters: [string(name: &apos;BUILD_ID&apos;, value: BUILD_ID)]
+                }
+                )
+            }
+        }
+		stage(&apos;DeployProd&apos;) {
+            steps {
+                parallel(
+                    &quot;DeployProd&quot;: {
+                        build job: &apos;CI/DeployProd&apos;, parameters: [string(name: &apos;BUILD_ID&apos;, value: BUILD_ID)]
+                }
+                )
+            }
+        }
+        
+
+      }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <authToken>swym</authToken>
+  <disabled>false</disabled>
+</flow-definition>

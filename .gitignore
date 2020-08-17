@@ -1,0 +1,20 @@
+# Lein/maven and clojure files
+/target
+/lib
+/classes
+/checkouts
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/.lein-*
+/.nrepl-port
+
+# Idea files
+*.iml
+.idea/
+
+# Custom generated files
+resources/dev/db/
+resources/test/db/
+test/cov/
