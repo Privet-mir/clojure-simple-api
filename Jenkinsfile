@@ -7,6 +7,7 @@ pipeline {
                 /* CheckOut branch from git, credentials id is picked from 
                 Global credentials you can configure it with user:pass for 
                 your git repo or use user:token generated from github*/
+                cleanWs()
                 git branch: '${BRANCH_NAME}',
                 credentialsId: 'github',
                 url: 'https://Privet-mir@github.com/Privet-mir/clojure-simple-api.git'
@@ -89,14 +90,14 @@ pipeline {
         stage('BuildProd') {
             steps {
                 sh '''
-                echo "Checkout Master"
-                git checkout master
+                echo "Checkout ${PLATFORM_BRANCH}"
+                git checkout ${PLATFORM_BRANCH}
 
                 echo "Merge ${PLATFORM_BRANCH}"
-                git merge origin/${PLATFORM_BRANCH}
+                git merge origin/${BRANCH_NAME}
                 
                 echo "Push to ${PLATFORM_BRANCH}"
-                git push origin ${PLATFORM_BRANCH}
+                git push origin ${PLATFORM_BRANCH} 
 
                 echo "Tag staging image for prod"
                 docker tag swym_staging:${BUILD_ID} swym_prod:${BUILD_ID}
@@ -108,7 +109,7 @@ pipeline {
         stage('DeployProd') {
             steps {
                 sh '''
-                    echo "Deploy docker prod swym service with 3 replicas, and delay of 10s"
+                    echo "Deploy docker prod swym service with 3 replicas"
 
                     echo $BUILD_ID
 
