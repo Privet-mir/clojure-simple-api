@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Set lein version
-      run: lein upgrade 2.8.3
+      run: sudo lein upgrade 2.8.3
     - name: Install dependencies
       run: lein deps
     - name: Run lint
