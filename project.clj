@@ -23,7 +23,7 @@
             [lein-cloverage "1.0.9"] ; Coverage for testing and coveralls
             [jonase/eastwood "0.2.4"] ; Linter
             [lein-bikeshed "0.4.1"] ; Another linter
-            [venantius/ultra "0.5.1"] ; Colorized test output
+;            [venantius/ultra "0.5.1"] ; Colorized test output
             [lein-nvd "0.6.0"]
             [lein-kibit "0.1.6"]
             [lein-ancient "0.6.15"]
