@@ -67,8 +67,8 @@ pip install robotframework-httplibrary
 sudo cp  ~/.local/bin/robot  /usr/local/bin/
 
 echo -e "${GREEN}Download Sonar scanner cli${NC}"
-wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip
-unzip sonar-scanner-cli-4.4.0.2170-linux.zip
+cd ~ && wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.4.0.2170-linux.zip
+cd ~ && unzip sonar-scanner-cli-4.4.0.2170-linux.zip
 
 echo -e "${GREEN}Install lein${NC}"
 cd ~ && wget https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
